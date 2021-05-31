@@ -1,4 +1,8 @@
-# Hello World
+# 1.1 Essentials
+
+## Hello World
+
+**code**:01HelloWorld.java
 
 Let's look at our first Java program. When run, the program below prints "Hello world!" to the screen. 
 
@@ -17,6 +21,8 @@ For those of you coming from a language like Python, this probably seems needles
 - We use **curly braces** `{` and `}` to denote the beginning and the end of a section of code.
 - Statements **must end** with semi-colons.
 
+## Running a Java Program
+
 The most common way to execute a Java program is to run it through a  sequence of two programs. 
 
 - The first is the Java compiler, or `javac`. 
@@ -26,19 +32,28 @@ The most common way to execute a Java program is to run it through a  sequence o
 
 For example, to run `HelloWorld.java`, we'd type the command `javac HelloWorld.java` into the terminal, followed by the command `java HelloWorld`. The result would look something like this:
 
-```bash
-$ javac HelloWorld.java
-$ java HelloWorld
+```shell
+$ javac HelloWorld.java #compiled the java file and turned it into a .class file
+$ java HelloWorld #runs the .class file, no need to put .class file extension
 Hello World! 
 ```
 
 You may notice that we include the '.java' when compiling, but we don't  include the '.class' when interpreting. This is just the way it is  (TIJTWII).
 
+Why make a class file at all?
+
+- .class file has been type checked. Distributed code is safer.
+- .class files are 'simpler' for machines to execute. Distributed code is faster.
+
+- Minor benefit: Protects your intellectual property. No need to give out source. (there are tools that can decompile .class files )
+
 Note: JDK is for developing java programs and JRE is for running. Usually the JDK contains JRE and the JVM, while the JRE only contains the JVM.
 
-# Variables and Loops
+## Variables and Loops
 
-```
+**code**: 02HelloNumbers.java
+
+```java
 public class HelloNumbers {
     public static void main(String[] args) {
         int x = 0;
@@ -50,7 +65,7 @@ public class HelloNumbers {
 }
 ```
 
-```
+```shell
 $ javac HelloNumbers.java
 $ java HelloNumbers
 $ 0 1 2 3 4 5 6 7 8 9 
@@ -66,7 +81,7 @@ Some interesting features of this program that might jump out at you:
 
 Of these features the most important one is the fact that variables have a **declared type.** 
 
-# Static Typing
+## Static Typing
 
 One of the most important features of Java is that all variables and expressions have a so-called `static type`. Java variables can contain values of that type, and only that type. **Furthermore, the type of a variable can never change.**
 
@@ -121,7 +136,7 @@ int h = 5 + "horse";
 
 The first one of these will succeed; the second will give a compiler error.  Since Java is strongly typed, if you tell it `h` is a string, it can concatenate the elements and give you a string.  But when `h` is an `int`, it can't concatenate a number and a string and give you a number.  
 
-# Defining Functions in Java
+## Defining Functions in Java
 
 In languages like Python, functions can be declared anywhere, even  outside of functions. For example, the code below declares a function  that returns the larger of two arguments, and then uses this function to compute and print the larger of the numbers 8 and 10:
 
@@ -151,21 +166,38 @@ public class LargerDemo {
 }
 ```
 
-# Code Style, Comments, Javadoc
-
-Code can be beautiful in many ways. It can be concise. It can be  clever. It can be efficient. One of the least appreciated aspects of  code by novices is code style. When you program as a novice, you are  often single mindedly intent on getting it to work, without regard to  ever looking at it again or having to maintain it over a long period of  time.
-
-In this course, we'll work hard to try to keep our code readable. Some of the most important features of good coding style are:
+## Code Style, Comments, Javadoc
 
 - Consistent style (spacing, variable naming, brace style, etc)
+
 - Size (lines that are not too wide, source files that are not too long)
+
 - Descriptive naming (variables, functions, classes), e.g. variables or functions with names like `year` or `getUserName` instead of `x` or `f`.
+
 - Avoidance of repetitive code: You should almost never have two  significant blocks of code that are nearly identical except for a few  changes.
+
 - Comments where appropriate. Line comments in Java use the `//` delimiter. Block (a.k.a. multi-line comments) comments use  `/*` and `*/`.
 
-The golden rule is this: Write your code so that it is easy for a stranger to understand.
+- Always have comments above functions, with the JavaDoc style
 
-# Defining and Using Classes
+  ```java
+  /** Returns the larger of x and y
+  	@precondition*/	   
+  public static int larger(int x, int y) {
+          if (x > y) {
+              return x;
+          }
+          return y;
+  }
+  ```
+
+  
+
+The golden rule is this: Write your code so that it is easy for a stranger or **yourself in the future** to understand.
+
+# 1.2 Objects
+
+## Defining and Using Classes
 
 ### Static vs. Non-Static Methods
 
@@ -455,5 +487,4 @@ these
 ```
 
 In the example above, `args` will be an array of Strings, where the entries are {"these", "are", "command", "line", "arguments"}.
-
 
