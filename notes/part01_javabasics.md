@@ -2,7 +2,7 @@
 
 ## Hello World
 
-**code**:01HelloWorld.java
+**code**: _01HelloWorld.java
 
 Let's look at our first Java program. When run, the program below prints "Hello world!" to the screen. 
 
@@ -51,7 +51,7 @@ Note: JDK is for developing java programs and JRE is for running. Usually the JD
 
 ## Variables and Loops
 
-**code**: 02HelloNumbers.java
+**code**: _02HelloNumbers.java
 
 ```java
 public class HelloNumbers {
@@ -195,11 +195,15 @@ public class LargerDemo {
 
 The golden rule is this: Write your code so that it is easy for a stranger or **yourself in the future** to understand.
 
+
+
 # 1.2 Objects
 
 ## Defining and Using Classes
 
 ### Static vs. Non-Static Methods
+
+code: _04Dog.java
 
 #### Static Methods
 
@@ -255,7 +259,7 @@ public class MalamuteDog {
 }
 ```
 
-As you should have seen in the past, classes can be instantiated, and instances can hold data. This leads to a more natural approach, where  we create instances of the `Dog` class and make the behavior of the `Dog` methods contingent upon the properties of the specific `Dog`. To make this more concrete, consider the class below:
+As you should have seen in the past, classes can be instantiated, and **instances can hold data**. This leads to a more natural approach, where  we create instances of the `Dog` class and make the behavior of the `Dog` methods contingent upon the properties of the specific `Dog`. To make this more concrete, consider the class below:
 
 ```java
 public class Dog {
@@ -443,7 +447,7 @@ public static Dog maxDog(Dog d1, Dog d2) {
 
 #### Static Variables
 
-It is occasionally useful for classes to have static variables. These are properties inherent to the class itself, rather than the instance.  For example, we might record that the scientific name (or binomen) for  Dogs is "Canis familiaris":
+It is occasionally useful for classes to have static variables. These are properties **inherent to the class itself, rather than the instance.**  For example, we might record that the scientific name (or binomen) for  Dogs is "Canis familiaris":
 
 ```java
 public class Dog {
