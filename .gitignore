@@ -3,6 +3,7 @@
 .idea
 *.iml
 
+out
 target
 
 java_reference.pdf

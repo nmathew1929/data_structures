@@ -1,4 +1,4 @@
-package part001;
+package part01_intro;
 
 public class _03LargerDemo {
     /** Return teh larger of x and y. */
