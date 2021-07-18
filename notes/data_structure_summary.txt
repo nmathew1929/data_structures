@@ -1,0 +1,23 @@
+IntList
+    A primitive linked-list implementation
+        that keeps track of an int value and the next node.
+    has get() and size()
+    
+    pros 
+        can add more integers dynamically.
+    cons
+        clunky to use
+        the client has to directly deal with pointers.
+        having a naked recursive data structure is strange. (atleast in java)
+        inorder to effectively write code they need to know how references work, in a pretty deep way. The recursion is right there for everyone to see.
+        
+        
+        
+    Uses:
+        No uses, only for demonstration purposes.
+
+SLList
+    pros
+    cons
+    Uses:
+

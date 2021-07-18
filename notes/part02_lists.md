@@ -411,3 +411,552 @@ public class IntList {
 
 # 2.2 The SLList
 
+## Improvement #1: Rebranding
+
+IntList is from before is a **naked recursive** data structure.  In order to use an `IntList` correctly, the programmer must  understand and utilize recursion even for simple list related tasks.  The recursion is right there, for all to see.
+
+This limits its usefulness to novice programmers, and 
+
+- potentially  introduces a whole new class of tricky errors that programmers might run into, 
+- depending on what sort of helper methods are provided by the `IntList` class.
+
+First we create the IntNode class to house all the recursion.
+
+```java
+public class IntNode {
+    public int item;
+    public IntNode next;
+
+    public IntNode(int i, IntNode n) {
+        item = i;
+        next = n;
+    }
+}
+```
+
+
+
+## Improvement #2: Bureaucracy
+
+```java
+public class SLList {
+    public IntNode first;
+
+    public SLList(int x) {
+        first = new IntNode(x, null);
+    }
+
+    public static void main(String[] args) {
+        /** Creates a list of one integer, namely 10 */
+        SLList L = new SLList(10);
+    }
+}
+```
+
+As you can see above, we have hidden dealing with pointers and assignment trickery to make out ds work, it now clean. Let's compare the IntList vs SLList now.
+
+```java
+IntList L1 = new IntList(5, null);
+SLList L2 = new SLList(5);
+```
+
+
+
+## addFirst and getFirst
+
+We now add new functionality to out DS.
+
+```java
+public class SLList {
+    public IntNode first;
+
+    public SLList(int x) {
+        first = new IntNode(x, null);
+    }
+
+    /** Adds an item to the front of the list. */
+    public void addFirst(int x) {
+        first = new IntNode(x, first);
+    }
+    
+    /** Retrieves the front item from the list. */
+	public int getFirst() {
+    	return first.item;
+	}
+    
+}
+```
+
+Let's compare how both IntList and SLList does the same thing again.
+
+```java
+/** Adding two values in the front of the list and fetching the first value */
+IntList L = new IntList(15, null);
+L = new IntList(10, L);
+L = new IntList(5, L);
+int x = L.first;
+```
+
+```java
+/** Adding two values in the front of the list and fetching the first value */
+SLList L = new SLList(15);
+L.addFirst(10);
+L.addFirst(5);
+int x = L.getFirst();
+```
+
+![image-20210717175133411](images/image-20210717175133411.png)
+
+The user of the IntList has pointers directly into the DS, which requires the user to understand recursion. The user of the SLList has a middle man to go through that abstracts these things out.
+
+
+
+## Improvement #3 Public vs. Private
+
+If I make IntNode private, then any user that would use our SLList class **wouldn't have access** to all the variables in IntNode, this is important so that the users don't do any unintended actions is not supported by  our DataStructure. 
+
+```java
+public class SLList {
+    private IntNode first;
+
+    public SLList(int x) {
+        first = new IntNode(x, null);
+    }
+```
+
+## Why Restrict Access?
+
+- Hide implementation details form users of your class.
+
+  - The user does not need to know about the first variable (IntNode), it is an implementation detail that **only we the creators of SLList** need to be bothered with. The users can think of SLList as a magic black box.
+  - Safe for you to change private methods (implementation)
+
+  Car analogy
+
+  - **Public**: Pedals, Steering Wheel **Private**: Fuel line, Rotary valve
+  - Despite the term 'access control';
+    - Nothing to do with protection against hackers, spies, and other evil entities.
+
+- If you make something **public** in java, the expectation is that then you will never change it.
+
+
+
+## Improvement #4 Nested Classes
+
+### Why is it Useful?
+
+Nested Classes are useful when a class doesn't stand on its won and its obviously subordinate to another class.
+
+- Make the nested class private if other classes should never use the nested class.
+
+In our case, makes sense to make IntNode a nested private class.
+
+- Hard to imagine other classes having a need to manipulate IntNodes. So if no one needs a IntNode reference make it private.
+
+- If the IntNode class never uses any details of the SLList class, **if the nested class never needs to look out   then you can add the keyword static.** (in this case think of static as never looks outwards)
+
+  - IntNode **cannot** use any of SLLists's constructors, methods or variables.
+
+   gives a tiny bit of memory saving. Whenever you make a nested java class private, the access modifiers **inside the class** do not matter.
+
+```java
+public class SLList {
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+
+        public IntNode(int i, IntNode n) {
+            item = i;
+            next = n;
+        }
+    }
+
+    private IntNode first;
+    public SLList(int x) {
+        first = new IntNode(x, null);
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        first = new IntNode(x, first);
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return first.item;
+    }
+
+    public static void main(String[] args) {
+        /** Creates a list of one integer, namely 10 */
+        SLList L = new SLList(15);
+        L.addFirst(10);
+        L.addFirst(5);
+        System.out.println(L.getFirst());
+    }
+}
+
+```
+
+ 
+
+## addLast() and size()
+
+```java
+public class SLList {
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+
+        public IntNode(int i, IntNode n) {
+            item = i;
+            next = n;
+        }
+    }
+
+    private IntNode first;
+    public SLList(int x) {
+        first = new IntNode(x, null);
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        first = new IntNode(x, first);
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return first.item;
+    }
+
+    public void addLast(int x) {
+        IntNode runner = first;
+        while(runner.next != null){
+            runner = runner.next;
+        }
+        runner.next = new IntNode(x, null);
+    }
+    public int iterativeSize() {
+        int x = 0;
+        IntNode runner = first;
+        while(runner.next !=null){
+           runner = runner.next;
+           ++x;
+        }
+        return ++x;
+    }
+
+    /** Returns the size of the list that starts at IntNode p.
+     * The reason for this helper method is because SLList is not recursive
+     * This is a very common pattern when working with recursive data structures.
+     * A public method which speaks the language of mortals.
+     * A private method which speaks the language of the Gods.
+    */
+    private static int size(IntNode p){
+        if(p.next == null)
+            return 1;
+        return 1 + size(p.next);
+    }
+
+    /** Recursive size */
+    public int size() {
+        return size(first);
+    }
+
+    public static void main(String[] args) {
+        /** Creates a list of one integer, namely 10 */
+        SLList L = new SLList(15);
+        L.addFirst(10);
+        L.addFirst(5);
+        L.addLast(20);
+        System.out.println(L.getFirst());
+        System.out.println(L.size());
+    }
+}
+```
+
+
+
+## Improvement#5 Caching (Fast size)
+
+Now or SLList class has size() and addLast() methods, the problem is they are kind of slow.
+
+![image-20210718124810529](images/image-20210718124810529.png)
+
+**b.  2000  seconds**
+
+Solution: Maintain a special size variable that caches the size of the list.
+
+​	Caching: putting a aside data to speed up retrieval
+
+There ain't no such things as a free lunch.
+
+- But spreading the work over each add call is a net win in almost any circumstances.
+
+![image-20210718125822088](images/image-20210718125822088.png)
+
+```java
+package part02_lists._03SLLists;
+
+/** An SLList is a list of integers, which hides the terrible truth of the nakedness within.
+ *
+ */
+public class SLList {
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+
+        public IntNode(int i, IntNode n) {
+            item = i;
+            next = n;
+        }
+    }
+
+    private IntNode first;
+    private int size;
+
+    public SLList(int x) {
+        first = new IntNode(x, null);
+        size = 1;
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        first = new IntNode(x, first);
+        ++size;
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return first.item;
+    }
+
+    public void addLast(int x) {
+        IntNode runner = first;
+        while(runner.next != null){
+            runner = runner.next;
+        }
+        runner.next = new IntNode(x, null);
+        ++size;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public static void main(String[] args) {
+        /** Creates a list of one integer, namely 10 */
+        SLList L = new SLList(15);
+        L.addFirst(10);
+        L.addFirst(5);
+        L.addLast(20);
+        System.out.println(L.getFirst());
+        System.out.println(L.size());
+    }
+}
+```
+
+
+
+## Improvement#6 : The Empty List
+
+We included a new constructor for the empty List scenario and fixed a bug with addLast. But it is kinda clunky.
+
+```java
+public class SLList {
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+
+        public IntNode(int i, IntNode n) {
+            item = i;
+            next = n;
+        }
+    }
+
+    private IntNode first;
+    private int size;
+
+    /** Creates an empty SLList */
+    public SLList() {
+       size = 0;
+       first = null;
+    }
+
+    public SLList(int x) {
+        first = new IntNode(x, null);
+        size = 1;
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        first = new IntNode(x, first);
+        ++size;
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return first.item;
+    }
+
+    /** we have a check for an empty list scenario. kinda ugly */
+    public void addLast(int x) {
+       if (first == null){
+          first = new IntNode(x, null);
+          return;
+       }
+        IntNode runner = first;
+        while(runner.next != null){
+            runner = runner.next;
+        }
+        runner.next = new IntNode(x, null);
+        ++size;
+    }
+    public int size() {
+        return size;
+    }
+
+    public static void main(String[] args) {
+        /** Creates a list of one integer, namely 10 */
+        SLList L = new SLList(15);
+        L.addFirst(10);
+        L.addFirst(5);
+        L.addLast(20);
+        System.out.println(L.getFirst());
+        System.out.println(L.size());
+    }
+}
+
+```
+
+
+
+## Improvement #6b: Sentinel Nodes
+
+As a human programmer, you only have so much working memory.
+
+You want to restrict the amount of complexity in your life.
+
+- Simple code is (usually ) good code
+  - Special cases are not 'simple'
+
+The fundamental problem:
+
+- The empty list has a null **first**. Can't access first.next
+
+Our fix is a bit ugly
+
+- Requires a special case
+- More complex data structures will have more special cases (gross!!)
+
+How can we avoid special cases?
+
+- Make all SLLists (even empty) the "same".
+
+```java
+  /** we have a check for an empty list scenario. kinda ugly */
+    public void addLast(int x) {
+       if (first == null){
+          first = new IntNode(x, null);
+          return;
+       }
+        IntNode runner = first;
+        while(runner.next != null){
+            runner = runner.next;
+        }
+        runner.next = new IntNode(x, null);
+        ++size;
+    }
+```
+
+Create a special node that is always there! Let's call it a "sentinal node".
+
+![image-20210718135001420](images/image-20210718135001420.png)
+
+
+
+```java
+public class SLList {
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+
+        public IntNode(int i, IntNode n) {
+            item = i;
+            next = n;
+        }
+    }
+
+    /** The first item (if it exists) is at sentinel.next */
+    private IntNode sentinel;
+    private int size;
+
+    /** Creates an empty SLList */
+    public SLList() {
+        sentinel = new IntNode(-1, null);
+        size = 0;
+    }
+
+    public SLList(int x) {
+        sentinel = new IntNode(-1, null);
+        sentinel.next = new IntNode(x, null);
+        size = 1;
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        IntNode prevFirst = sentinel.next;
+        sentinel.next = new IntNode(x, prevFirst);
+        ++size;
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return sentinel.next.item;
+    }
+
+    public void addLast(int x) {
+        IntNode runner = sentinel.next;
+        while(runner.next != null){
+            runner = runner.next;
+        }
+        runner.next = new IntNode(x, null);
+        ++size;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public static void main(String[] args) {
+        /** Creates a list of one integer, namely 10 */
+        SLList L = new SLList(15);
+        L.addFirst(10);
+        L.addFirst(5);
+        L.addLast(20);
+        System.out.println(L.getFirst());
+        System.out.println(L.size());
+    }
+}
+
+```
+
+### Notes:
+
+- Sentinel is never null, always point to the sentinel node, it is a dummy node that avoids special cases.
+
+![image-20210718140035693](images/image-20210718140035693.png)
+
+## Invariants
+
+An invariant is a condition that is guaranteed to be true during code execution
+
+An SLList with a sentinel node has at least the following invariants:
+
+- The sentinel reference always points to a sentinel node.
+- The first node (if it exists), is always at sentinel.next
+- the size variable is always the total number of items that have been added.
+
+Invariants makes it easier to reason about code:
+
+- Can assume they are true to simply code( addLast doesn't need to worry about nulls)
+- Must ensure that methods preserve invariants.
