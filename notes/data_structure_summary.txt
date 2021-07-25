@@ -1,8 +1,15 @@
+LISTS
+    Used to store values values sequentially.
+    Can dynamically grow or shrink, as opposed ot an array.
+
 IntList
     A primitive linked-list implementation
-        that keeps track of an int value and the next node.
-    has get() and size()
-    
+    that keeps track of an int value and the next node.
+           has get() and size()
+
+    Motivation for IntList:
+        to build a DS that dynamically grows and shrinks, unlike an array.
+
     pros 
         can add more integers dynamically.
     cons
@@ -11,13 +18,36 @@ IntList
         having a naked recursive data structure is strange. (atleast in java)
         inorder to effectively write code they need to know how references work, in a pretty deep way. The recursion is right there for everyone to see.
         
-        
-        
     Uses:
         No uses, only for demonstration purposes.
 
 SLList
-    pros
-    cons
+    A primitive singly linked-list implementation
+    Motivation for SLList :
+        to automatically take care of pointers, so that the user does not need to.
+    pros:
+        has addFirst(), addLast(), size()
+        don't have to mess around this pointers. the private nested IntNode class takes care of this.
+        always has a sentinel node which takes care of the 0 item list scenario.
+        addFirst() is fast
+        size is not iterative and is very fast because of caching
+
+    cons:
+        adding an item in the middle, requires to iterate to that spot.
+        addLast() is very expensive, as it requires you to iterate to that spot.
+
     Uses:
+        can be used to store int values, but is not recommended
+            as it is missing lot of functionality that we expect from a DS
+            and the methods it provide are not optimized.
+
+ DLList
+
+    Motivation for DLList:
+        to fix addLast() so that it can be as fast as addFirst()
+    pros:
+    cons:
+    Uses:
+
+
 

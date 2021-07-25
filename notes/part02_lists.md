@@ -1,4 +1,4 @@
-# 2.1 The Mystery of the Walrus
+#  2.1 The Mystery of the Walrus
 
 ```java
 public class Walrus {
@@ -695,63 +695,58 @@ There ain't no such things as a free lunch.
 ![image-20210718125822088](images/image-20210718125822088.png)
 
 ```java
-package part02_lists._03SLLists;
-
-/** An SLList is a list of integers, which hides the terrible truth of the nakedness within.
- *
- */
 public class SLList {
-    private static class IntNode {
-        public int item;
-        public IntNode next;
+  private static class IntNode {
+    public int item;
+    public IntNode next;
 
-        public IntNode(int i, IntNode n) {
-            item = i;
-            next = n;
-        }
+    public IntNode(int i, IntNode n) {
+      item = i;
+      next = n;
     }
+  }
 
-    private IntNode first;
-    private int size;
+  private IntNode first;
+  private int size;
 
-    public SLList(int x) {
-        first = new IntNode(x, null);
-        size = 1;
+  public SLList(int x) {
+    first = new IntNode(x, null);
+    size = 1;
+  }
+
+  /** Adds x to the front of the list. */
+  public void addFirst(int x) {
+    first = new IntNode(x, first);
+    ++size;
+  }
+
+  /** Returns the first item in the list. */
+  public int getFirst() {
+    return first.item;
+  }
+
+  public void addLast(int x) {
+    IntNode runner = first;
+    while (runner.next != null) {
+      runner = runner.next;
     }
+    runner.next = new IntNode(x, null);
+    ++size;
+  }
 
-    /** Adds x to the front of the list. */
-    public void addFirst(int x) {
-        first = new IntNode(x, first);
-        ++size;
-    }
+  public int size() {
+    return size;
+  }
 
-    /** Returns the first item in the list. */
-    public int getFirst() {
-        return first.item;
-    }
-
-    public void addLast(int x) {
-        IntNode runner = first;
-        while(runner.next != null){
-            runner = runner.next;
-        }
-        runner.next = new IntNode(x, null);
-        ++size;
-    }
-
-    public int size() {
-        return size;
-    }
-
-    public static void main(String[] args) {
-        /** Creates a list of one integer, namely 10 */
-        SLList L = new SLList(15);
-        L.addFirst(10);
-        L.addFirst(5);
-        L.addLast(20);
-        System.out.println(L.getFirst());
-        System.out.println(L.size());
-    }
+  public static void main(String[] args) {
+    /** Creates a list of one integer, namely 10 */
+    SLList L = new SLList(15);
+    L.addFirst(10);
+    L.addFirst(5);
+    L.addLast(20);
+    System.out.println(L.getFirst());
+    System.out.println(L.size());
+  }
 }
 ```
 
@@ -960,3 +955,194 @@ Invariants makes it easier to reason about code:
 
 - Can assume they are true to simply code( addLast doesn't need to worry about nulls)
 - Must ensure that methods preserve invariants.
+
+
+
+# 2.3 DLList
+
+## One Downside of SLLists
+
+Inserting at the back of an SLList is much slower than the front.
+
+![image-20210724183638459](images/image-20210724183638459.png)
+
+
+
+## Improvement #7: Looking Back
+
+Caching the last pointer?
+
+```java
+package part02_lists._05DLLists;
+
+public class DLList {
+
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+
+
+        public IntNode(int i, IntNode n) {
+            item = i;
+            next = n;
+        }
+    }
+
+    /** The first item (if it exists) is at sentinel.next */
+    private IntNode sentinel;
+    private IntNode last;
+    private int size;
+
+    /** Creates an empty SLList */
+    public DLList() {
+        sentinel = new IntNode(-1, null);
+        size = 0;
+    }
+
+    public DLList(int x) {
+        sentinel = new IntNode(-1, null);
+        sentinel.next = new IntNode(x, null);
+        size = 1;
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        IntNode prevFirst = sentinel.next;
+        sentinel.next = new IntNode(x, prevFirst);
+        ++size;
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return sentinel.next.item;
+    }
+
+    public void addLast(int x) {
+        last.next = new IntNode(x, null);
+        last = last.next;
+        ++size;
+    }
+
+    public int iterativeSize() {
+        int x = 0;
+        IntNode runner = sentinel.next;
+        while(runner.next !=null){
+            runner = runner.next;
+            ++x;
+        }
+        return ++x;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public static void main(String[] args) {
+   }
+}
+```
+
+Turns out if addfirst and addlast will be fast, removeLast will be slow. We need to find out which element is second to last, so
+
+- One we can make it point to null.
+- second we can make the last point to the second to last, now last node.  and inorder to find the second to last item we need to iterate and get to it.
+
+
+
+![image-20210724185521472](images/image-20210724185521472.png)
+
+
+
+The operations at the end of the lists are pretty fast, but the middles ones are expensive, we will talk about optimizations later.
+
+While this works, there is one limitation.
+
+![image-20210724193213774](images/image-20210724193213774.png)
+
+The last node sometimes points to the sentinel and sometimes points to a **real** node. We will start running into wierd if statements in out methods.
+
+One way to avoid this happening is to add a second sentinel.
+
+## Improvement #8 Fancier Sentinel Node(s)
+
+
+
+![image-20210724193338531](images/image-20210724193338531.png)
+
+When we start adding items to the list, we start adding them between the two sentinels. This approach is fine.
+
+But there is another approach.
+
+![image-20210724193657747](images/image-20210724193657747.png)
+
+![image-20210724194037585](images/image-20210724194037585.png)
+
+
+
+```java
+package part02_lists._05DLLists;
+
+public class DLList {
+
+    private static class IntNode {
+        public int item;
+        public IntNode next;
+        public IntNode prev;
+
+
+        public IntNode(int i, IntNode n, IntNode p) {
+            item = i;
+            next = n;
+            prev = p;
+        }
+    }
+
+    /** The first item (if it exists) is at sentinel.next */
+    private IntNode sentinel;
+    private int size;
+
+    /** Creates an empty SLList */
+    public DLList() {
+        sentinel = new IntNode(-1, null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
+        size = 0;
+    }
+
+    public DLList(int x) {
+        sentinel = new IntNode(-1, null, null);
+        sentinel.next = new IntNode(x, sentinel, sentinel);
+        sentinel.prev = sentinel.next;
+        size = 1;
+    }
+
+    /** Adds x to the front of the list. */
+    public void addFirst(int x) {
+        IntNode prevFirst = sentinel.next;
+        sentinel.next = new IntNode(x, prevFirst, sentinel);
+        prevFirst.prev = sentinel.next;
+        ++size;
+    }
+
+    /** Returns the first item in the list. */
+    public int getFirst() {
+        return sentinel.next.item;
+    }
+
+    public void addLast(int x) {
+        IntNode prevLast = sentinel.prev;
+        sentinel.prev = new IntNode(x, sentinel, prevLast);
+        prevLast.next = sentinel.prev;
+        ++size;
+    }
+
+
+    public int size() {
+        return size;
+    }
+
+    public static void main(String[] args) {
+   }
+}
+```
+

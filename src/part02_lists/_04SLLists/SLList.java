@@ -1,4 +1,4 @@
-package part02_lists._03SLLists;
+package part02_lists._04SLLists;
 
 /** An SLList is a list of integers, which hides the terrible truth of the nakedness within.
  */
@@ -51,15 +51,7 @@ public class SLList {
         ++size;
     }
 
-    public int iterativeSize() {
-        int x = 0;
-        IntNode runner = sentinel.next;
-        while(runner.next !=null){
-           runner = runner.next;
-           ++x;
-        }
-        return ++x;
-    }
+
 
     public int size() {
         return size;
