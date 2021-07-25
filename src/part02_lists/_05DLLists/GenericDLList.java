@@ -1,14 +1,14 @@
 package part02_lists._05DLLists;
 
-public class DLList {
+public class GenericDLList<T> {
 
-    private static class IntNode {
-        public int item;
-        public IntNode next;
-        public IntNode prev;
+    private static class Node <T> {
+        public T item;
+        public Node next;
+        public Node prev;
 
 
-        public IntNode(int i, IntNode n, IntNode p) {
+        public Node(T i, Node n, Node p) {
             item = i;
             next = n;
             prev = p;
@@ -16,47 +16,47 @@ public class DLList {
     }
 
     /** The first item (if it exists) is at sentinel.next */
-    private IntNode sentinel;
+    private Node sentinel;
     private int size;
 
     /** Creates an empty SLList */
-    public DLList() {
-        sentinel = new IntNode(-1, null, null);
+    public GenericDLList() {
+        sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
     }
 
-    public DLList(int x) {
-        sentinel = new IntNode(-1, null, null);
-        sentinel.next = new IntNode(x, sentinel, sentinel);
+    public GenericDLList(T item) {
+        sentinel = new Node(null, null, null);
+        sentinel.next = new Node(item, sentinel, sentinel);
         sentinel.prev = sentinel.next;
         size = 1;
     }
 
     /** Adds x to the front of the list. */
-    public void addFirst(int x) {
-        IntNode prevFirst = sentinel.next;
-        sentinel.next = new IntNode(x, prevFirst, sentinel);
+    public void addFirst(T item) {
+        Node prevFirst = sentinel.next;
+        sentinel.next = new Node(item, prevFirst, sentinel);
         prevFirst.prev = sentinel.next;
         ++size;
     }
 
     /** Returns the first item in the list. */
-    public int getFirst() {
-        return sentinel.next.item;
+    public T getFirst() {
+        return (T) sentinel.next.item;
     }
 
-    public void addLast(int x) {
-        IntNode prevLast = sentinel.prev;
-        sentinel.prev = new IntNode(x, sentinel, prevLast);
+    public void addLast(T item) {
+        Node prevLast = sentinel.prev;
+        sentinel.prev = new Node(item, sentinel, prevLast);
         prevLast.next = sentinel.prev;
         ++size;
     }
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        IntNode runner = sentinel.next;
+        Node runner = sentinel.next;
         while (runner != sentinel) {
             stringBuilder.append(" --> ").append(runner.item);
             runner = runner.next;
@@ -70,10 +70,10 @@ public class DLList {
     }
 
     public static void main(String[] args) {
-        DLList L = new DLList();
-        L.addFirst(2021);
-        L.addFirst(2017);
-        L.addLast(2024);
+        GenericDLList<String> L = new GenericDLList();
+        L.addFirst("Navin");
+        L.addFirst ("Hello");
+        L.addLast("Mathew");
         System.out.println(L.getFirst());
         System.out.println(L.size());
         System.out.println(L.toString());

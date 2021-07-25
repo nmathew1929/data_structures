@@ -1146,3 +1146,11 @@ public class DLList {
 }
 ```
 
+
+
+## Notes:
+
+For now the DS Doubly Linked List can be used for usecaseses that require a lot of addition and deletion on the ends.
+EX: stacks and dequeues and queues.
+
+If you want to get items from the middle of the list, it ends up being not constant time and goes to approximately O(n) time.

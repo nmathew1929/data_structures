@@ -42,12 +42,19 @@ SLList
             and the methods it provide are not optimized.
 
  DLList
-
+    Doubly Linked List.
     Motivation for DLList:
         to fix addLast() so that it can be as fast as addFirst()
     pros:
+        Addition and removal from both ends are constant time.
     cons:
+        Getting an item form the middle is still expensive, requires iteration.
+        if you want to constant lookup there are other DS that offer constant look up times.
     Uses:
+        Can be used for construction of
+            Stacks
+            Queues
+            Dequeues
 
 
 
