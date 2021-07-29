@@ -962,106 +962,54 @@ Invariants makes it easier to reason about code:
 
 ## One Downside of SLLists
 
-Inserting at the back of an SLList is much slower than the front.
+Inserting at the back of an SLList is much slower than the front. For a long list, the `addLast` method **has to walk through the entire list**, much like we saw with the `size` method
 
 ![image-20210724183638459](images/image-20210724183638459.png)
 
 
 
-## Improvement #7: Looking Back
+## addLast
 
-Caching the last pointer?
+One approach is to cache the last pointer, so we have access to it whenever we need it.
 
 ```java
-package part02_lists._05DLLists;
-
-public class DLList {
-
-    private static class IntNode {
-        public int item;
-        public IntNode next;
-
-
-        public IntNode(int i, IntNode n) {
-            item = i;
-            next = n;
-        }
-    }
-
-    /** The first item (if it exists) is at sentinel.next */
+public class SLList {
     private IntNode sentinel;
     private IntNode last;
-    private int size;
-
-    /** Creates an empty SLList */
-    public DLList() {
-        sentinel = new IntNode(-1, null);
-        size = 0;
-    }
-
-    public DLList(int x) {
-        sentinel = new IntNode(-1, null);
-        sentinel.next = new IntNode(x, null);
-        size = 1;
-    }
-
-    /** Adds x to the front of the list. */
-    public void addFirst(int x) {
-        IntNode prevFirst = sentinel.next;
-        sentinel.next = new IntNode(x, prevFirst);
-        ++size;
-    }
-
-    /** Returns the first item in the list. */
-    public int getFirst() {
-        return sentinel.next.item;
-    }
+    private int size;    
 
     public void addLast(int x) {
         last.next = new IntNode(x, null);
         last = last.next;
-        ++size;
+        size += 1;
     }
-
-    public int iterativeSize() {
-        int x = 0;
-        IntNode runner = sentinel.next;
-        while(runner.next !=null){
-            runner = runner.next;
-            ++x;
-        }
-        return ++x;
-    }
-
-    public int size() {
-        return size;
-    }
-
-    public static void main(String[] args) {
-   }
+    ...
 }
 ```
 
-Turns out if addfirst and addlast will be fast, removeLast will be slow. We need to find out which element is second to last, so
+Consider the box and pointer diagram representing the `SLList` implementation above, **which includes the last pointer**. Suppose that we'd like to support `addLast`, `getLast`, and `removeLast` operations. Will the structure shown support rapid `addLast`, `getLast`, and `removeLast` operations? If not, which operations are slow?
 
-- One we can make it point to null.
-- second we can make the last point to the second to last, now last node.  and inorder to find the second to last item we need to iterate and get to it.
+![image-20210727224310658](images/image-20210727224310658.png)
 
+`addLast` and `getLast` will be fast, but `removeLast` will be slow. That's because we have no easy way to get the second-to-last node, to update the `last` pointer, after removing the last node.
 
+## Improvement #7: Looking Back
+
+To solve the problem of getting to the second-to-last node, we need **every node to have a pointer looking to the back.**  A common term for such list is the "Doubly Linked List".
 
 ![image-20210724185521472](images/image-20210724185521472.png)
 
 
 
-The operations at the end of the lists are pretty fast, but the middles ones are expensive, we will talk about optimizations later.
+The operations at the end of the lists are pretty fast, but the middles ones are expensive, we will talk about possible workarounds later.
 
-While this works, there is one limitation.
+While this works, there is one special case.
 
 ![image-20210724193213774](images/image-20210724193213774.png)
 
-The last node sometimes points to the sentinel and sometimes points to a **real** node. We will start running into wierd if statements in out methods.
+The last node sometimes points to the **sentinel** and sometimes points to a **real** node. We will start running into weird if statements in out methods.
 
-One way to avoid this happening is to add a second sentinel.
+One way to avoid this happening is to **add a second sentinel.**
 
 ## Improvement #8 Fancier Sentinel Node(s)
 
@@ -1075,9 +1023,15 @@ But there is another approach.
 
 ![image-20210724193657747](images/image-20210724193657747.png)
 
+This approach relies just on the sentinel, instead of a separate **last** pointer. The last node's next will point to the sentinel node. A circular sentinel, which tracks the **first real node** and also the **last real node.**
+
+- With the addition of the sentinel node, we were able to prevent the **user of the DS with dealing with a pointer.**
+- With the double links, we where able to track previous nodes, which lets us removeLast in constant time.
+- With a circular list, we are able to keep track of the last real node easily, without clunky logic. A circular list also allows us to reduce overhead, by only dealing with one sentinel node as opposed to two (sentFront, sentBack)
+
 ![image-20210724194037585](images/image-20210724194037585.png)
 
-
+Doubly Linked List full implementation.
 
 ```java
 package part02_lists._05DLLists;
@@ -1151,6 +1105,149 @@ public class DLList {
 ## Notes:
 
 For now the DS Doubly Linked List can be used for usecaseses that require a lot of addition and deletion on the ends.
-EX: stacks and dequeues and queues.
+EX: **stacks** and **dequeues** and **queues**.
 
-If you want to get items from the middle of the list, it ends up being not constant time and goes to approximately O(n) time.
+If you want to get items from the middle of the list, it ends up being not constant time and goes to approximately O(n) time. For such a use case, we would need a list with an implementation that favors fast lookups.
+
+
+
+# 2.4 Arrays
+
+![image-20210728133258411](images/image-20210728133258411.png)
+
+
+
+![image-20210728144232859](images/image-20210728144232859.png)
+
+
+
+## Arrays
+
+![image-20210728144826396](images/image-20210728144826396.png)
+
+```java
+public class ArrayBasics {
+    public static void main(String[] args) {
+        int[] z = null;
+        int[] x, y;
+
+        x = new int[] {1, 2, 3, 4, 5};
+        y = x; //copy the address that variable x holds. now x, y references the initial array
+        x = new int[] {-1, 2, 5, 4, 99}; // only y holds the references.
+        y = new int[3]; // the initial array will be garbage collected.
+        //in java, when an array is initialized all the boxes are zero.
+        z = new int[0]; //an array of 0 length. empthy array.
+        int xL = x.length;
+
+        String[] s = new String[6]; //default value for objects is null
+        s[4] = "ketchup";
+        s[x[3] - x[1]] = "muffins";
+
+        int[] b = {9, 10, 11};
+        System.arraycopy(b, 0, x, 3, 2); //intellij hints at the parameters.
+    }
+
+}
+```
+
+![image-20210728175249641](images/image-20210728175249641.png)
+
+## 2D arrays in Javas
+
+```java
+public class ArrayBasics2 {
+    public static void main(String[] args) {
+        int[][] pascalsTriangle;
+        pascalsTriangle = new int[4][];
+        int[] rowZero = pascalsTriangle[0];
+
+        pascalsTriangle[0] = new int[]{1};
+        pascalsTriangle[1] = new int[]{1, 1};
+        pascalsTriangle[2] = new int[]{1, 2, 1};
+        pascalsTriangle[3] = new int[]{1, 3, 3, 1};
+        int[] rowTwo = pascalsTriangle[2];
+        rowTwo[1] = -5;
+
+        int[][] matrix;
+        matrix = new int[4][];//creates 1 total array with null values in \it.
+        matrix = new int[4][4]; //creates 5 total arrays with null values in 4 them.
+
+        int[][] pascalAgain  = new int[][] {
+                                        {1},
+                                        {1, 1},
+                                        {1, 2, 1},
+                                        {1,3, 3, 1}};
+
+    }
+}
+
+```
+
+![image-20210728180221226](images/image-20210728180221226.png)
+
+## Array vs Classes
+
+- Classes have **named** memory boxes, while arrays have **indexed** memory boxes.
+- Classes have methods **attached to them**, that change the state of the class, which is data inside the named memory boxes. While **arrays have no methods**
+- In JavaScript, the line between a class(object) and an array are **blurred**.
+
+Arrays and Classes can both be used to organize a bunch of memory boxes.
+
+- Both have a fixed number of boxes.
+
+| Arrays                                        | Classes                                      |
+| --------------------------------------------- | -------------------------------------------- |
+| Array boxes are accessed using[] notation.    | Class boxes are accessed using dot notation. |
+| Array boxes **must all be of the same type.** | Class boxes **may be of different types.**   |
+| **Fixed number of boxes**                     | **Fixed number of boxes** (atleast in java)  |
+
+![image-20210728181328993](images/image-20210728181328993.png)
+
+With **arrays we can compute the indices during runtime.** Imagine a program like this.
+
+![image-20210728181502503](images/image-20210728181502503.png)
+
+**Class member variable names CANNOT be computed and used at runtime.**
+
+![image-20210728181628016](images/image-20210728181628016.png)
+
+You can kind of do with reflection.
+
+![image-20210728181844557](images/image-20210728181844557.png)
+
+## Appendix: Java Arrays vs. Other Languages
+
+Compared to arrays in other languages, Java arrays:
+
+- Have no special syntax for "slicing" (such as in Python).
+
+- Cannot be shrunk or expanded (such as in Ruby).
+
+- Do not have member methods (such as in Javascript).
+
+- Must contain values only of the same type (unlike Python).
+
+  
+
+# 2.5 The AList
+
+Why do we need to have another implementation for our list? isn't DLList good enough?
+
+![image-20210728182247520](images/image-20210728182247520.png)
+
+The limitation to our DLList is that of arbitrary retrieval.
+
+![image-20210728182422259](images/image-20210728182422259.png)
+
+getLast() can be gotten from the sentinel node, while get(int i) needs to traverse the list until it finds the index.
+
+getLast () is O(1) while get(int i ) is O(n).
+
+This is why we have to use an array based list.
+
+## Random Access in Arrays
+
+Retrieval from any position of an array is very fast. Any index of an array can be gotten in O(1) time, be it index 2 of index 50_000_000.
+
+Ultra fast random access results from the fact that memory boxes are the same sizes (in bits.)
+
