@@ -757,6 +757,7 @@ public class SLList {
 We included a new constructor for the empty List scenario and fixed a bug with addLast. But it is kinda clunky.
 
 ```java
+//Naive SLList
 public class SLList {
     private static class IntNode {
         public int item;
@@ -1231,11 +1232,13 @@ Compared to arrays in other languages, Java arrays:
 
 # 2.5 The AList
 
+AList uses arrays as an implementation.
+
 Why do we need to have another implementation for our list? isn't DLList good enough?
 
-![image-20210728182247520](images/image-20210728182247520.png)
+**The limitation to our DLList is that of arbitrary retrieval.** Below is the DLList
 
-The limitation to our DLList is that of arbitrary retrieval.
+![image-20210728182247520](images/image-20210728182247520.png)
 
 ![image-20210728182422259](images/image-20210728182422259.png)
 
@@ -1250,4 +1253,104 @@ This is why we have to use an array based list.
 Retrieval from any position of an array is very fast. Any index of an array can be gotten in O(1) time, be it index 2 of index 50_000_000.
 
 Ultra fast random access results from the fact that memory boxes are the same sizes (in bits.)
+
+![image-20210728191202943](images/image-20210728191202943.png)
+
+## Naive AList
+
+```java
+public class AList {
+    private int[] items;
+    private int size;
+
+
+    /** Creates an empty list. */
+    public AList() {
+        items = new int[100];
+        size = 0;
+    }
+
+    /** Inserts X into the back of the list. */
+    public void addLast(int x) {
+        items[size] = x;
+        ++size;
+    }
+
+    /** Returns the item from the back of the list. */
+    public int getLast() {
+       return items[size-1];
+    }
+
+    /** Gets the ith item in the list (0 is the front). */
+    public int get(int i) {
+        return items[i];
+    }
+
+    public int size(){
+        return size;
+    }
+
+
+}
+```
+
+Lets implement the removal methods.
+
+![image-20210728193355321](images/image-20210728193355321.png)
+
+## removeLast()
+
+The list is an abstract idea, and the `size`, `items`, and `items[i]` memory boxes are the concrete representation of that idea. Any change the user tries to make to the list using the abstractions we provide (`addLast`, `removeLast`) must be reflected in some changes to these memory boxes in a way that matches the user's expectations.
+
+Our invariants provide us with a guide for what those changes should look like.
+
+![image-20210728194027065](images/image-20210728194027065.png)
+
+## Naive array resizing
+
+Suppose we have an AList in the state shown in the figure below. What will happen if we call `addLast(11)`? What should we do about this problem?
+
+![image-20210728214113263](images/image-20210728214113263.png)
+
+The answer, in Java, is that we simply build a new array that is big enough to accomodate the new data. For example, we can imagine adding the new item as follows:
+
+```java
+int[] a = new int[size + 1];
+System.arraycopy(items, 0, a, 0, size);
+a[size] = 11;
+items = a;
+size = size + 1;
+```
+
+![image-20210728194555474](images/image-20210728194555474.png)
+
+## Analyzing the Naive Resizing Array
+
+Since the array resizing by size + 1, it has terrible performance. if we where to use that resize method, it would be called every time addLast() was called.
+
+
+
+## Geometric Resizing 
+
+Instead of doing size += 1 we can do size *=2;
+
+![image-20210728215034154](images/image-20210728215034154.png)
+
+The resizing factor if used as a additive is unusably bad.
+
+![image-20210728215115601](images/image-20210728215115601.png)
+
+## Memory Efficiency
+
+An AList should not only be efficient in time, **but also efficient in space.**
+
+- Define the "usage ratio" R = size/items.length;
+
+- Typical solution: Half array size when R < 0.25
+
+  
+
+![image-20210728215313319](images/image-20210728215313319.png)
+
+So we should always keep the running efficiency  vs memory efficiency in our head. There are data structures that trade off space in lieu of running time such hash tables.
 

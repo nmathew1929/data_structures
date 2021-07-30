@@ -6,19 +6,19 @@ package part02_lists._07ALists;
     size:       The number of items in the list should be size.
  */
 
-public class AList {
-    private int[] items;
+public class GenericAList<Item> {
+    private Object[] items;
     private int size;
 
 
     /** Creates an empty list. */
-    public AList() {
-        items = new int[100];
+    public GenericAList() {
+        items =  new Object[100];
         size = 0;
     }
 
     /** Inserts X into the back of the list. */
-    public void addLast(int x) {
+    public void addLast(Item x) {
         if(size == items.length)
             resize(size*=2);
         items[size] = x;
@@ -26,19 +26,19 @@ public class AList {
     }
 
     private void resize(int capacity) {
-        int[] a  = new int[capacity];
+        Object[] a  = new Object[capacity];
         System.arraycopy(items, 0, a, 0, size);
         items = a;
     }
 
     /** Returns the item from the back of the list. */
-    public int getLast() {
-       return items[size-1];
+    public Item getLast() {
+        return (Item) items[size-1];
     }
 
     /** Gets the ith item in the list (0 is the front). */
-    public int get(int i) {
-        return items[i];
+    public Item get(int i) {
+        return (Item) items[i];
     }
 
     public int size(){
@@ -48,9 +48,9 @@ public class AList {
     /** Deletes item from back of the list and
      * returns deleted item.
      */
-    public int removeLast() {
-        int x = getLast();
-        items[size - 1]= 0; //this is not needed tbh.
+    public Item removeLast() {
+        Item x = getLast();
+        items[size - 1] = null; //Unused objects need to have no reference.
         --size;
         return x;
     }
