@@ -1,7 +1,7 @@
 package part02_lists._07ALists;
 
 /*  Invariants: (Things that are always true about our DS.
-    addLast:    The next item wa want to add, will go into position size
+    addLast:    The next item we want to add, will go into position size
     getLast:    The item we want to return is in position size - 1;
     size:       The number of items in the list should be size.
  */
@@ -20,7 +20,7 @@ public class AList {
     /** Inserts X into the back of the list. */
     public void addLast(int x) {
         if(size == items.length)
-            resize(size*=2);
+            resize(size*2);
         items[size] = x;
         ++size;
     }
