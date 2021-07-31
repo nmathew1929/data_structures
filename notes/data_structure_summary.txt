@@ -46,9 +46,12 @@ SLList
     Motivation for DLList:
         to fix addLast() so that it can be as fast as addFirst()
     pros:
-        Addition and removal from both ends are constant time.
+        Addition and removal from both ends are constant time O(1).
+        Lookups from both ends are constant time O(1).
+        No wasted node, the DS dynamically grows and shrinks, no wasted space.
     cons:
         Getting an item form the middle is still expensive, requires iteration.
+        Only getFirst and getLast is O(1), arbitrary lookup is O(n)
         if you want to constant lookup there are other DS that offer constant look up times.
     Uses:
         Can be used for construction of
@@ -56,5 +59,23 @@ SLList
             Queues
             Dequeues
 
-
-
+AList
+    Array List
+    Motivation for AList
+        to speed up arbitrary lookup performance, as it stands now it is O(n)
+    pros:
+        Lookups are O(1),
+            Lookups are constant for first index, last index and any other index in between.
+        removeFirst and removeLast is O(1), most of the time.
+    cons:
+        Implementation can be a little confusing?
+        You have to make sure resize method isn't called a lot.
+            removeFirst and removeLast can be expensive if resize called a lot.
+        Since the underlying array is contiguous, wasted space can be an issue.
+            You also have to have a loading constant, to make sure that underlying array isn't used.
+    Uses:
+        Can be used for  construction of
+            Lists
+            Dequeues
+            Queues
+            Stacks
