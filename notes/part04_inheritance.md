@@ -329,3 +329,249 @@ public static void peek(SLList<String> list) {
 
 ![image-20210820140158327](images/image-20210820140158327.png)
 
+## 4.2 Implementation Inheritance: Extends
+
+![image-20220129082857729](images/image-20220129082857729.png)
+
+The extends is a powerful tool to do really aggressive implementation inheritance.
+
+- In this case I need RotatingSLList, that does SLList like stuff, **but I don't want it to be the exact same thing.**
+- The extend keyword lets me bring in all the methods I don't want to change and **override methods** I deemed that needs to be changed.
+- extends also lets you add **additional methods**
+
+```java
+package part04_inheritance;
+
+public class RotatingSLList<Item> extends SLList<Item>{
+
+    /** Rotates list to the right. */
+    public void rotateRight() {
+        Item x = removeLast();
+        addFirst(x);
+    }
+
+    public static void main(String[] args) {
+        RotatingSLList<Integer> rs1 = new RotatingSLList<>();
+
+        rs1.addLast(10);
+        rs1.addLast(11);
+        rs1.addLast(12);
+        rs1.addLast(13);
+
+        /* Should be: [13, 10, 11, 12] */
+        rs1.rotateRight();
+        rs1.print();
+    }
+}
+```
+
+## VengefulSList
+
+Suppose we want to build an SLList that:
+
+- Remembers all Items that have been destroyed by removeLast.
+- Has an additional method printLostItems(), which prints all deleted items.
+
+![image-20220129090820129](images/image-20220129090820129.png)
+
+```java
+package part04_inheritance;
+
+public class VengefulSLList<Item>  extends SLList<Item> {
+    SLList<Item> deletedItems;
+
+    public VengefulSLList() {
+         deletedItems = new SLList<>();
+    }
+    @Override
+    public Item removeLast() {
+        Item x = super.removeLast();
+        deletedItems.addLast(x);
+        return x;
+    }
+
+    public void printLostItem() {
+        deletedItems.print();
+    }
+
+    public static void main(String[] args) {
+        VengefulSLList<Integer> vs1 = new VengefulSLList<Integer>();
+        vs1.addLast(1);
+        vs1.addLast(5);
+        vs1.addLast(10);
+        vs1.addLast(13);
+        // vs1 is now: [1, 5, 10, 13]
+
+        vs1.removeLast();
+        vs1.removeLast();
+        //After deletion, vs1 is: [1, 5]
+
+
+        //Should print out of the numbers fo the fallen, namely 10 and 13.
+        System.out.println("The fallen are: ");
+        vs1.printLostItem();
+    }
+}
+
+```
+
+private in java means that not even your subclasses can access it.
+
+### Constructors are not Inherited
+
+Inherited constrictor are initiated automatically even without super();
+
+![image-20220129105127517](images/image-20220129105127517.png)
+
+![image-20220129105327000](images/image-20220129105327000.png)
+
+If you don't specify the intended constructor using the parameter in super, it will call the default one.
+
+```java
+package part04_inheritance;
+
+public class VengefulSLList<Item>  extends SLList<Item> {
+    SLList<Item> deletedItems;
+
+    public VengefulSLList() {
+        super();
+        deletedItems = new SLList<>();
+    }
+
+    public VengefulSLList(Item x) {
+        super(x);
+        deletedItems = new SLList<>();
+    }
+    @Override
+    public Item removeLast() {
+        Item x = super.removeLast();
+        deletedItems.addLast(x);
+        return x;
+    }
+
+    public void printLostItem() {
+        deletedItems.print();
+    }
+
+    public static void main(String[] args) {
+        //this calls the super(x), instead of the super();
+        VengefulSLList<Integer> vs1 = new VengefulSLList<Integer>(0);
+        vs1.addLast(1);
+        vs1.addLast(5);
+        vs1.addLast(10);
+        vs1.addLast(13);
+        // vs1 is now: [1, 5, 10, 13]
+
+        vs1.removeLast();
+        vs1.removeLast();
+        //After deletion, vs1 is: [1, 5]
+        vs1.print();
+
+        //Should print out of the numbers fo the fallen, namely 10 and 13.
+        System.out.println("The fallen are: ");
+        vs1.printLostItem();
+    }
+}
+```
+
+### Object class
+
+Classes can form a hierarchy.
+
+![image-20220129110541806](images/image-20220129110541806.png)
+
+Any class where you do not say it extends something else, will **implicitly extend the object class.**
+
+```java
+public class SLList<Type> implements List61B<Type> {
+public class SLList<Type> extends Object implements List61B<Type> { 
+```
+
+SLList implicit extends the object class.
+
+Interfaces do not extend the object class.
+
+### Is-a vs Has-A
+
+Common mistake is to use it for "has-a" relationships.
+
+![image-20220129111324291](images/image-20220129111324291.png)
+
+
+
+### Complexity: The Enemy
+
+![image-20220129111532121](images/image-20220129111532121.png)
+
+![image-20220129111911694](images/image-20220129111911694.png)
+
+![image-20220129112229112](images/image-20220129112229112.png)
+
+![image-20220129112357898](images/image-20220129112357898.png)
+
+abstraction is great, enforced by java compiler. private does it.
+
+### Implementation Inheritance Breaks Encapsulation
+
+![image-20220129112801841](images/image-20220129112801841.png)
+
+![image-20220129112928864](images/image-20220129112928864.png)
+
+**Answer is a.**
+
+![image-20220129113242240](images/image-20220129113242240.png)
+
+**Answer c.**
+
+1. vd.barkMany(3)
+2. dog.bark(), since vd.bark() does not work.
+3. dog.bark() calls barkMany(1)
+4. due to dynamic selection vd.barkMany(1).
+5. vd.baMany() calls dog.bark() and on it goes. 
+
+A change made by oracle in the Dog class breaks your code, although you didn't change anything in it. This is how implmentation breaks inheritance.
+
+## Type Checking and Casting
+
+### ![image-20220129114343549](images/image-20220129114343549.png)
+
+![image-20220129114926628](images/image-20220129114926628.png)
+
+![image-20220129114953964](images/image-20220129114953964.png)
+
+![image-20220129115109471](images/image-20220129115109471.png)
+
+A compiler has to execute the code in advance to know what would happen with the code during runtime. We as developer has that inuition.
+
+![image-20220129115235930](images/image-20220129115235930.png)
+
+![image-20220129115418073](images/image-20220129115418073.png)
+
+![image-20220129115556492](images/image-20220129115556492.png)
+
+![image-20220129115759319](images/image-20220129115759319.png)
+
+### Higher Order Functions
+
+![image-20220129115912128](images/image-20220129115912128.png)
+
+In old java <7, **memory boxes (variables) cannot contain pointers to funcitons.**
+
+![image-20220129130025277](images/image-20220129130025277.png)
+
+### Inheritance Cheatsheet
+
+`VengefulSLList extends SLList` means VengefulSLList "is-an" SLList, and inherits all of SLList's members:
+
+- Variables, methods nested classes
+- Not constructors Subclass constructors must invoke superclass constructor first. The `super` keyword can be used to invoke overridden superclass methods and constructors.
+
+Invocation of overridden methods follows two simple rules:
+
+- Compiler plays it safe and only allows us to do things according to the static type.
+- For overridden methods (*not overloaded methods*), the actual method invoked is based on the dynamic type of the invoking expression
+- Can use casting to overrule compiler type checking.
+
+
+
+## 4.3 Subtype Polymorphism vs. HOFs

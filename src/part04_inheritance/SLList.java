@@ -57,16 +57,37 @@ public class SLList<Type> implements List61B<Type> {
     @Override
     //the reason why we made doubly linked list.
     public Type removeLast() {
-        return null;
+        size -= 1;
+        Type x = getLast();
+
+        if (sentinel.next.next == null){
+            sentinel.next = null;
+            return x;
+        }
+
+        Node p = sentinel.next;
+
+        while (p.next.next != null){
+            p = p.next;
+        }
+        p.next = null;
+        return x;
     }
 
     public void addLast(Type x) {
-        Node runner = sentinel.next;
-        while(runner.next != null){
-            runner = runner.next;
+        size += 1;
+
+        if (sentinel.next == null){
+            sentinel.next = new Node(x, null);
+            return;
         }
-        runner.next = new SLList.Node(x, null);
-        ++size;
+
+        Node p = sentinel.next;
+
+        while (p.next != null){
+            p = p.next;
+        }
+        p.next = new Node(x, null);
     }
 
     @Override
